@@ -1,0 +1,60 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": "COVID-19 Deaths cases in July 2020",
+  "width": 800,
+  "height": 600,
+  "data": {
+    "url": "https://raw.githubusercontent.com/Xiaokun1999/homework_week_9/main/js/world_map.geo.json",
+    "format": {
+      "type": "topojson", "feature": "world_map.geo"
+    }
+  },
+  "projection": {"type": "equalEarth"},
+  "layer":[
+    {
+      "transform": [
+        {"calculate": "'Data is not available in ' + datum.properties.name", "as": "note"}
+      ],
+      "mark": {"type": "geoshape", "fill": "lightgray", "stroke": "white"},
+      "encoding": {
+        "tooltip": {
+          "field": "note"
+        }
+      }
+    },
+    {
+      "transform": [
+        {
+          "lookup": "properties.name",
+          "from": {
+            "data": {
+              "url": "https://raw.githubusercontent.com/Xiaokun1999/homework_week_9/main/data/country_wise_latest.csv"
+            },
+            "key": "Country/Region",
+            "fields": ["Confirmed", "Deaths", "Recovered", "Active", "Deaths / 100 Cases"]
+          }
+        }
+      ],
+      "mark": {"type": "geoshape"},
+      "encoding": {
+        "color": {
+          "field": "Deaths / 100 Cases",
+          "type": "quantitative",
+          "scale": {
+            "type": "threshold",
+            "domain": [2, 4, 6, 10],
+            "range": ["#fc9272", "#fb6a4a", "#ef3b2c", "#cb181d", "#99000d"]
+          }
+        },
+        "tooltip": [
+          {"field": "properties.name", "type": "nominal", "title": "Country"},
+          {"field": "Confirmed", "type": "quantitative"},
+          {"field": "Deaths", "type": "quantitative"},
+          {"field": "Recovered", "type": "quantitative"},
+          {"field": "Active", "type": "quantitative"},
+          {"field": "Deaths / 100 Cases", "type": "quantitative"}
+        ]
+      }
+    }
+  ]
+}
